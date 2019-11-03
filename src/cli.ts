@@ -11,6 +11,7 @@ let argv =  yargs
         type: 'string',
         describe: "Input .scml file to rescale"
     }).option('verbose', {
+        type: 'boolean',
         alias: 'v',
         default: false,
     }).option('output-file', {
@@ -36,4 +37,6 @@ replaceScmlImage(
     argv["output-file"],
     argv["original-image-name"],
     argv["new-image-name"],
-    logger);
+    logger)
+    .then(() => logger('Completed successfully'))
+    .catch(e => { console.error('Fatal error: ', e); });

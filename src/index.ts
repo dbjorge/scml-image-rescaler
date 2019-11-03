@@ -24,17 +24,28 @@ export async function replaceScmlImage(
     log(`Replacing and rescaling image '${originalImageName}' -> '${newImageName}' in file '${inputFile}' -> '${outputFile}'`)
 
     const rescaledContent = await getReplacedScmlImageContent(inputFile, originalImageName, newImageName, log);
+
+    log(`Writing updated file contents to '${outputFile}'...`)
     fs.writeFileSync(outputFile, rescaledContent, 'utf8');
+    log('Wrote output file.');
 }
 
 export async function getReplacedScmlImageContent(originalScmlFile: string, originalImageName: string, newImageName: string, log: Logger): Promise<string>
 {
+    log(`Parsing input file ${originalScmlFile}...`);
+
     const originalContent = fs.readFileSync(originalScmlFile, 'utf8');
     const parsed = await xml2js.parseStringPromise(originalContent);
 
-    log('parsed spriter XML:');
-    log(inspect(parsed, false, 8, true))
+    log('Parsed input file.');
 
+    const newImageFilePath = path.join(path.dirname(originalScmlFile), newImageName);
+    log(`Calculating dimensions of new image ${newImageFilePath}...`);
+    const newDimensions = await imageSizeAsync(newImageFilePath);
+    log(`Calculated new dimensions as ${inspect(newDimensions)}.`);
+
+    log('Calculating transform info...');
+    
     let folderId: number = -1;
     let fileId: number = -1;
     let scaleFactorX: number = -1;
@@ -46,15 +57,14 @@ export async function getReplacedScmlImageContent(originalScmlFile: string, orig
             if (fileName === originalImageName) {
                 folderId = folder['$'].id;
                 fileId = file['$'].id;
-                const newImageFilePath = path.join(path.dirname(originalScmlFile), newImageName);
-                const newDimensions = await imageSizeAsync(newImageFilePath);
                 scaleFactorX = file['$'].width / newDimensions.width;
                 scaleFactorY = file['$'].height / newDimensions.height;
 
                 file['$'].name = newImageName;
                 file['$'].width = newDimensions.width;
                 file['$'].height = newDimensions.height;
-                break;                
+                log(`Found matching file entry: ${inspect(file['$'])}`)
+                break;
             }
         }
     }
@@ -63,23 +73,26 @@ export async function getReplacedScmlImageContent(originalScmlFile: string, orig
         throw new Error(`Didn't find original image ${originalImageName} in scml file ${originalScmlFile}`);
     }
 
-    log('Calculated scale factors:');
-    log('Identified transform info: ');
-    log(` folderId = ${folderId}`);
-    log(` fileId = ${fileId}`);
-    log(` scaleFactorX = ${scaleFactorX}`);
-    log(` scaleFactorY = ${scaleFactorY}`);
-    
-    for (const entity of parsed.spriter_data.entity) {
-        for (const animation of entity.animation) {
-            for (const timeline of animation.timeline) {
-                for (const key of timeline.key) {
-                    for (const object of key.object) {
+    log('Calculated transform info:');
+    log(`  folderId = ${folderId}`);
+    log(`  fileId = ${fileId}`);
+    log(`  scaleFactorX = ${scaleFactorX}`);
+    log(`  scaleFactorY = ${scaleFactorY}`);
+
+    log('Applying scale transform to applicable /spriter_data/entity/animation/timeline/key/object nodes...');
+
+    for (const entity of parsed.spriter_data.entity || []) {
+        for (const animation of entity.animation || []) {
+            for (const timeline of animation.timeline || []) {
+                for (const key of timeline.key || []) {
+                    for (const object of key.object || []) {
                         if (object['$'].folder === folderId && object['$'].file === fileId) {
                             const originalScaleX = object['$'].scale_x || 1;
                             const originalScaleY = object['$'].scale_y || 1;
                             object['$'].scale_x = originalScaleX * scaleFactorX;
                             object['$'].scale_y = originalScaleY * scaleFactorY;
+
+                            log(`  Rescaled ${originalScaleX},${originalScaleY} -> ${object['$'].scale_x},${object['$'].scale_y}`);
                         }
                     }
                 }
@@ -87,6 +100,9 @@ export async function getReplacedScmlImageContent(originalScmlFile: string, orig
         }
     }
 
+    log('Applied scale transforms.')
+
+    log('Converting modified SCML content back into SCML file format...')
     const xmlBuilder = new xml2js.Builder({
         xmldec: {
             'version': '1.0',
@@ -98,5 +114,8 @@ export async function getReplacedScmlImageContent(originalScmlFile: string, orig
             newline: '\n'
        } 
     });
-    return xmlBuilder.buildObject(parsed);
+    const xmlOutput = xmlBuilder.buildObject(parsed);
+
+    log('Converted back to SCML format.');
+    return xmlOutput;
 }
