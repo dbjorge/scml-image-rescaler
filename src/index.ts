@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 import * as fs from 'fs';
 
-export type Logger = (string) => void;
+export type Logger = (message: string) => void;
 
 export function rescaleScmlFile(
     inputFile: string,
