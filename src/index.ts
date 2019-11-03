@@ -45,7 +45,7 @@ export async function getReplacedScmlImageContent(originalScmlFile: string, orig
     log(`Calculated new dimensions as ${inspect(newDimensions)}.`);
 
     log('Calculating transform info...');
-    
+
     let folderId: number = -1;
     let fileId: number = -1;
     let scaleFactorX: number = -1;
@@ -57,13 +57,16 @@ export async function getReplacedScmlImageContent(originalScmlFile: string, orig
             if (fileName === originalImageName) {
                 folderId = folder['$'].id;
                 fileId = file['$'].id;
+                log(`Found matching file entry under folder id ${folderId}:`);
+                log(inspect(file['$']));
+                
                 scaleFactorX = file['$'].width / newDimensions.width;
                 scaleFactorY = file['$'].height / newDimensions.height;
 
                 file['$'].name = newImageName;
                 file['$'].width = newDimensions.width;
                 file['$'].height = newDimensions.height;
-                log(`Found matching file entry: ${inspect(file['$'])}`)
+                
                 break;
             }
         }
