@@ -1,10 +1,10 @@
 {
-  "name": "scml-rescaler",
+  "name": "scml-image-rescaler",
   "version": "1.0.0",
-  "description": "CLI tool to rescale references to images in Spriter .scml files",
+  "description": "CLI tool for replacing an image referenced by an SCML file with a resized version of the same image, rescaling the SCML references as necessary",
   "main": "dist/index.js",
   "bin": "dist/cli.js",
-  "repository": "https://github.com/dbjorge/scml-rescaler",
+  "repository": "https://github.com/dbjorge/scml-image-rescaler",
   "author": "Dan Bjorge <dan@dbjorge.net>",
   "license": "MIT",
   "devDependencies": {
