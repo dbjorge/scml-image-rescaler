@@ -22,7 +22,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "run": "dist/cli.js",
+    "cli": "node dist/cli.js",
     "test": "jest"
   }
 }
