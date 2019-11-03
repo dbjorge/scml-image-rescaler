@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 import * as yargs from 'yargs'
-import { rescaleScmlFile } from './index';
+import { replaceScmlImage } from './index';
 
 let argv =  yargs
     .help()
     .version()
-    .example('$0 --input-file original.scml --output-file half-scale.scml --scale 0.5', 'Rescales for half-size images')
+    .example('$0 --input-file original.scml --output-file updated.scml --original-image-name original.png --new-image-name new.png', 'basic usage')
     .option('input-file', {
         type: 'string',
         describe: "Input .scml file to rescale"
@@ -17,9 +17,12 @@ let argv =  yargs
         type: 'string',
         describe: "Output .scml file to write (if omitted, writes in-place)",
         default: null
-    }).option('scale', {
-        type: 'number',
-        describe: "The factor by which to rescale (eg, 2.0 or 0.5)",
+    }).option('original-image-name', {
+        type: 'string',
+        describe: "original image name, relative to project directory (eg, original.png)",
+    }).option('new-image-name', {
+        type: 'string',
+        describe: "new image name, relative to project directory (eg, new.png)",
     }).argv;
 
 if (argv.verbose) {
@@ -28,8 +31,9 @@ if (argv.verbose) {
 
 const logger = argv.verbose ? console.info : () => {};
 
-rescaleScmlFile(
+replaceScmlImage(
     argv["input-file"],
     argv["output-file"],
-    argv.scale,
+    argv["original-image-name"],
+    argv["new-image-name"],
     logger);
