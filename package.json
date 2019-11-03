@@ -1,12 +1,18 @@
 {
   "name": "scml-image-rescaler",
   "version": "1.0.0",
-  "description": "CLI tool for replacing an image referenced by an SCML file with a resized version of the same image, rescaling the SCML references as necessary",
+  "description": "Node CLI tool for replacing an image referenced by an SCML file with a resized version of the same image, rescaling the SCML references as necessary",
   "main": "dist/index.js",
   "bin": "dist/cli.js",
   "repository": "https://github.com/dbjorge/scml-image-rescaler",
   "author": "Dan Bjorge <dan@dbjorge.net>",
   "license": "MIT",
+  "files": [
+    "dist/",
+    "src/",
+    "LICENSE",
+    "README.md"
+  ],
   "devDependencies": {
     "@types/jest": "^24.0.21",
     "jest": "^24.9.0",
