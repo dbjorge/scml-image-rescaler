@@ -1,6 +1,6 @@
 {
   "name": "scml-image-rescaler",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Node CLI tool for replacing an image referenced by an SCML file with a resized version of the same image, rescaling the SCML references as necessary",
   "main": "dist/index.js",
   "bin": "dist/cli.js",
