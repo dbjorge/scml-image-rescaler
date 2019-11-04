@@ -1,3 +1,5 @@
+[![npm version badge](https://img.shields.io/npm/v/scml-image-rescaler)](https://github.com/dbjorge/scml-image-rescaler) [![build status badge](https://github.com/dbjorge/scml-image-rescaler/workflows/ci%20build/badge.svg)](https://github.com/dbjorge/scml-image-rescaler/actions?query=workflow%3A%22ci+build%22)
+
 # scml-image-rescaler
 
 Node.js command line tool for replacing an image referenced by an Spriter SCML file with a resized/rescaled version of the same image, rescaling the SCML references as necessary.
